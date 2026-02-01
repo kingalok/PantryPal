@@ -1,14 +1,13 @@
 # Frontend
 
-Simple UI for PantryPal POC:
+**For the POC, the UI lives in the backend.** There are no source files in this folder.
 
-- **Add product** form (product name; vendor = Sainsbury's for POC).
-- **Watchlist** — list of watched products with latest price and “alert” state.
-- **Alert signup** — user enters email or Telegram ID to receive daily alerts.
+- The web interface is **server-rendered** by FastAPI using **Jinja2** templates.
+- Templates: `backend/app/templates/` — `base.html`, `index.html`.
+- That gives you: Add product form, watchlist table, Set price, Run price check now, Remove.
 
-Options for implementation:
+So the “frontend” for PantryPal POC is part of the backend app; no separate frontend build or repo is required.
 
-- **Jinja + HTMX:** Served by FastAPI; minimal JS.
-- **React / Vue SPA:** Separate build; backend serves static files and exposes REST.
+---
 
-Choose one for POC; keep the UI simple.
+If you later want a separate SPA (e.g. React or Vue), you could build it here and have the backend serve the built static files. For now, the Jinja UI is enough.
