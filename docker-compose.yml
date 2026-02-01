@@ -1,0 +1,18 @@
+# PantryPal — local run (laptop / Rancher Desktop)
+# Backend: API + scheduler; SQLite in a volume
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PANTRY_DB_PATH=/data/pantry.db
+    volumes:
+      - pantry_data:/data
+    # Optional: run scheduler in same container via CMD override
+    # command: ["sh", "-c", "python -m app.scheduler & uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+
+volumes:
+  pantry_data: {}
