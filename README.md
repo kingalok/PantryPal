@@ -2,6 +2,8 @@
 
 **Price watch for groceries — get alerted when prices drop (e.g. rollbacks) at Sainsbury's and, later, other retailers.**
 
+![Alt text](./images/PantryPal.jpeg "Azura - The Guardian of Pipelines")
+
 Showcase project: [kingalok.github.io/agentic-projects](https://kingalok.github.io/agentic-projects/)
 
 ---
