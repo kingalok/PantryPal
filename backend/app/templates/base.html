@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PantryPal{% endblock %}</title>
+    <style>
+        :root { --bg: #f8f9fa; --card: #fff; --border: #dee2e6; --primary: #0d6efd; --text: #212529; --muted: #6c757d; }
+        * { box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: var(--bg); color: var(--text); line-height: 1.5; }
+        .container { max-width: 720px; margin: 0 auto; padding: 1rem; }
+        h1 { font-size: 1.5rem; margin: 0 0 1rem; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
+        label { display: block; font-weight: 500; margin-bottom: 0.25rem; }
+        input[type="text"], input[type="url"], input[type="email"] { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.75rem; }
+        button, .btn { display: inline-block; padding: 0.5rem 1rem; background: var(--primary); color: #fff; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 0.9rem; }
+        button:hover, .btn:hover { opacity: 0.9; }
+        .btn-secondary { background: var(--muted); }
+        .btn-danger { background: #dc3545; }
+        .muted { color: var(--muted); font-size: 0.875rem; }
+        .price { font-weight: 600; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { font-weight: 600; }
+        a { color: var(--primary); }
+        .alert-info { background: #e7f3ff; border: 1px solid #b6d4fe; border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem; }
+        .empty { color: var(--muted); padding: 1rem 0; }
+        .site-header { margin-bottom: 1rem; }
+        .site-logo { display: block; max-width: 180px; height: auto; }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        <header class="site-header">
+            <img src="/static/PantryPal.jpeg" alt="PantryPal" class="site-logo" />
+        </header>
+        <p class="muted">Watch grocery prices at Sainsbury's. Get alerted when prices drop.</p>
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

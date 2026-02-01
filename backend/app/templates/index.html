@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <h2 style="margin-top:0;">Add product to watchlist</h2>
+    <p class="muted">Paste a Sainsbury's product URL or search by name.</p>
+    <form id="add-form" method="post" action="/api/watchlist/add" style="max-width: 400px;">
+        <label for="url">Product URL (optional)</label>
+        <input type="url" id="url" name="url" placeholder="https://www.sainsburys.co.uk/gol-ui/product/...">
+        <label for="search_query">Or search by name</label>
+        <input type="text" id="search_query" name="search_query" placeholder="e.g. Laila Basmati Rice 10kg">
+        <label for="alert_email">Alert email (optional)</label>
+        <input type="email" id="alert_email" name="alert_email" placeholder="you@example.com">
+        <label for="alert_telegram">Telegram chat ID (optional)</label>
+        <input type="text" id="alert_telegram" name="alert_telegram_chat_id" placeholder="Your Telegram chat ID">
+        <label><input type="checkbox" name="alert_on_drop_only" value="1" checked> Only alert on price drop</label>
+        <button type="submit">Add to watchlist</button>
+    </form>
+</div>
+
+<div class="card">
+    <h2 style="margin-top:0;">Your watchlist</h2>
+    {% if items %}
+    <p class="muted" style="margin-top:0;">Prices are checked daily at 06:00. <button type="button" id="run-check-btn" class="btn btn-secondary" style="margin-left:0.5rem;">Run price check now</button> If the site blocks automated access, use <strong>Set price</strong> after opening the product link in your browser.</p>
+    <table>
+        <thead>
+            <tr><th>Product</th><th>Latest price</th><th>Nectar</th><th>Last checked</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td><a href="{{ item.product_url }}" target="_blank" rel="noopener">{{ item.product_name }}</a></td>
+                <td class="price">{% if item.latest_price is not none %}£{{ "%.2f"|format(item.latest_price) }}{% else %}—{% endif %}</td>
+                <td>{% if item.latest_nectar_price is not none %}£{{ "%.2f"|format(item.latest_nectar_price) }}{% else %}—{% endif %}</td>
+                <td class="muted">{% if item.latest_recorded_at %}{{ item.latest_recorded_at[:16] }}{% else %}—{% endif %}</td>
+                <td>
+                    <button type="button" class="btn btn-secondary set-price-btn" style="padding:0.25rem 0.5rem;font-size:0.8rem;margin-right:0.25rem;" data-product-id="{{ item.product_id }}">Set price</button>
+                    <button type="button" class="btn btn-danger remove-btn" style="padding:0.25rem 0.5rem;font-size:0.8rem;" data-id="{{ item.watchlist_id }}">Remove</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">No products on your watchlist yet. Add one above.</p>
+    {% endif %}
+</div>
+
+<script>
+document.getElementById('add-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const body = {
+        url: form.url.value || null,
+        search_query: form.search_query.value || null,
+        alert_email: form.alert_email.value || null,
+        alert_telegram_chat_id: form.alert_telegram.value || null,
+        alert_on_drop_only: form.alert_on_drop_only.checked
+    };
+    if (!body.url && !body.search_query) { alert('Enter a URL or search term'); return; }
+    try {
+        const r = await fetch('/api/watchlist/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const data = await r.json();
+        if (r.ok) { window.location.reload(); }
+        else { alert(data.detail?.detail || data.detail || data.message || 'Failed'); }
+    } catch (err) { alert('Request failed'); }
+});
+document.querySelectorAll('.remove-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+        if (!confirm('Remove from watchlist?')) return;
+        const id = this.getAttribute('data-id');
+        const r = await fetch('/api/watchlist/' + id, { method: 'DELETE' });
+        if (r.ok) window.location.reload();
+        else alert('Failed to remove');
+    });
+});
+document.querySelectorAll('.set-price-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+        const productId = this.getAttribute('data-product-id');
+        const priceStr = prompt('Enter current price (£), e.g. 12 or 12.50');
+        if (priceStr === null) return;
+        const price = parseFloat(priceStr.replace(/[^0-9.]/g, ''));
+        if (isNaN(price) || price <= 0) { alert('Enter a valid price'); return; }
+        const nectarStr = prompt('Nectar price (£) - optional, press Cancel to use same as price');
+        var nectar = price;
+        if (nectarStr !== null && nectarStr.trim() !== '') {
+            var n = parseFloat(nectarStr.replace(/[^0-9.]/g, ''));
+            if (!isNaN(n) && n > 0) nectar = n;
+        }
+        try {
+            const r = await fetch('/api/products/' + productId + '/price', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ price: price, nectar_price: nectar })
+            });
+            if (r.ok) window.location.reload();
+            else { var d = await r.json(); alert(d.detail || 'Failed'); }
+        } catch (e) { alert('Request failed'); }
+    });
+});
+var runBtn = document.getElementById('run-check-btn');
+if (runBtn) {
+    runBtn.addEventListener('click', async function() {
+        this.disabled = true;
+        this.textContent = 'Running…';
+        try {
+            const r = await fetch('/api/jobs/run-now', { method: 'POST' });
+            var data = r.ok ? await r.json() : {};
+            if (r.ok) { window.location.reload(); }
+            else { alert(data.detail || 'Failed'); }
+        } catch (e) { alert('Request failed'); }
+        this.disabled = false;
+        this.textContent = 'Run price check now';
+    });
+}
+</script>
+{% endblock %}

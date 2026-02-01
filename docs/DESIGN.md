@@ -119,8 +119,7 @@ Interface: `AlertChannel.send(subject, body, recipient)` where recipient is emai
   - Home: short blurb + “Add product” form (product name; optional vendor preselected to Sainsbury's).  
   - Watchlist: table/cards of watched products, latest price, previous price, “Alert sent” indicator.  
   - Optional: “Alert signup” — user enters email or Telegram ID and selects which products to get alerts for (or “all my watchlist”).
-- **Stack:** Keep it simple: Jinja templates + HTMX, or a small React/Vue SPA; backend exposes REST (e.g. `GET /products`, `POST /watchlist`, `GET /price-history?product_id=…`).
-- **Showcase:** Presentable enough for LinkedIn and team; mobile-friendly is a plus.
+- **Stack:** Keep it simple: Jinja templates + minimal JS; backend exposes REST (e.g. `GET /api/watchlist`, `POST /api/watchlist/add`, `GET /api/price-history?product_id=…`). Mobile-friendly is a plus.
 
 ---
 
