@@ -11,4 +11,4 @@ Options for implementation:
 - **Jinja + HTMX:** Served by FastAPI; minimal JS.
 - **React / Vue SPA:** Separate build; backend serves static files and exposes REST.
 
-Choose one for POC; keep it minimal for showcase (LinkedIn, team).
+Choose one for POC; keep the UI simple.
